@@ -1,32 +1,31 @@
 pipeline {
 agent any
 tools{
-maven 'maven 3.6.1'
+nodejs 'NodeJS 19.0.1'
 }
 stages{
-stage("build"){
+stage(build){
+when{
+changeset "**/result/**"
+}
 steps{
-echo 'Compiling worker app'
+echo 'Compiling result app..'
 dir('worker'){
-sh 'mvn compile'
+sh 'npm install'
 }
 }
 }
-stage("test"){
+stage(test){
+when{
+changeset "**/result/**"
+}
 steps{
-echo 'Running Unit Tests on worker app'
+echo 'Running Unit Tests on result app..'
+dir('result'){
+sh 'npm install'
+sh 'npm test'
 }
 }
-stage("package"){
-steps{
-echo 'Packaging worker app'
-}
-}
-}
-
-post{
-always{
-echo 'Building multibranch pipeline for worker is completed..'
 }
 }
 }
